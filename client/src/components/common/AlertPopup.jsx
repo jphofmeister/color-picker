@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import classnames from "classnames";
-import { isEmpty, getDateTime, isNonEmptyArray } from "../../utilities/SharedFunctions";
+import { isEmpty, getDateTime, isNonEmptyArray } from "../../utilities/sharedFunctions";
 
 const AlertPopup = (props) => {
 

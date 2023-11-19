@@ -31,7 +31,7 @@ const App = () => {
         }}></div>
       </div>
 
-      <ColorPicker hue={rngHue} />
+      <ColorPicker hue={rngHue} setSaturation={setSaturation} setLightness={setLightness} />
 
     </main>
   );
