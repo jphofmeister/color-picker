@@ -42,7 +42,7 @@ const HueInput = (props) => {
   let setRngHue = isEmpty(props.setRngHue) === false ? props.setRngHue : noFunctionAvailable;
 
   return (
-    <HueInputContainer className="slider-input-container" hue={rngHue}>
+    <HueInputContainer className="slider-input-container" $hue={rngHue}>
       <FormInput
         formInputID="rngHue"
         labelText="Hue"

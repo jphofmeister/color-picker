@@ -48,7 +48,7 @@ const AlphaInput = (props) => {
   let setRngAlpha = isEmpty(props.setRngAlpha) === false ? props.setRngAlpha : noFunctionAvailable;
 
   return (
-    <AlphaInputContainer className="slider-input-container" hue={rngHue} saturation={saturation} lightness={lightness} alpha={rngAlpha}>
+    <AlphaInputContainer className="slider-input-container" $hue={rngHue} $saturation={saturation} $lightness={lightness} $alpha={rngAlpha}>
       <FormInput
         formInputID="rngAlpha"
         labelText="Alpha"

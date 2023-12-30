@@ -15,8 +15,8 @@ const StyledColorPicker = styled.div`
 
   .color-picker-cursor {
     position: absolute;
-    top: calc(${props => props.$handlePosition.y}px - 10px);
-    left: calc(${props => props.$handlePosition.x}px - 10px);
+    top: calc(${props => props.$dragHandlePosition.y}px - 10px);
+    left: calc(${props => props.$dragHandlePosition.x}px - 10px);
     background-color: transparent;
     border: 3px solid #fff;
     display: ${props => props.$isDragging === true ? "none" : "block"};
@@ -24,6 +24,7 @@ const StyledColorPicker = styled.div`
     width: 20px;
     border-radius: 20px;
     cursor: grab;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
   }
 `;
 
@@ -44,16 +45,21 @@ const ColorPicker = (props) => {
   const colorPickerRef = useRef(null);
   const dragItemRef = useRef(null);
 
+  const [colorPickerClientRect, setColorPickerClientRect] = useState({});
   const [colorPickerOffset, setColorPickerOffset] = useState({ x: 0, y: 0 });
-  const [handlePosition, setHandlePosition] = useState({ x: 0, y: 0 });
+  const [dragHandlePosition, setDragHandlePosition] = useState({ x: 0, y: 0 });
 
   const [isDragging, setIsDragging] = useState(false);
 
+
+  // * get offsets and boundingClientRect for the color picker -- 12/30/2023 JH
   useEffect(() => {
 
     if (isEmpty(colorPickerRef.current) === false) {
 
       let boundingClientRect = colorPickerRef.current.getBoundingClientRect();
+
+      setColorPickerClientRect(boundingClientRect);
 
       let newOffset = {
         x: boundingClientRect.x,
@@ -67,8 +73,47 @@ const ColorPicker = (props) => {
   }, [colorPickerRef]);
 
 
-  const handleDragStart = (event) => {
+  // * if color picker handle goes outside the color picker box, reset to the edge of the box -- 
+  useEffect(() => {
 
+    // console.log("dragHandlePosition", dragHandlePosition);
+    // console.log("colorPickerClientRect", colorPickerClientRect);
+
+    let dragTop = dragHandlePosition.y;
+    let dragLeft = dragHandlePosition.x;
+
+    let colorPickerTop = colorPickerClientRect.top - colorPickerOffset.y;
+    let colorPickerBottom = colorPickerClientRect.bottom - colorPickerOffset.y;
+    let colorPickerLeft = colorPickerClientRect.left - colorPickerOffset.x;
+    let colorPickerRight = colorPickerClientRect.right - colorPickerOffset.x;
+
+    if (dragTop - 10 < colorPickerTop) {
+      dragTop = colorPickerTop;
+    };
+
+    if (dragTop - 10 > colorPickerBottom) {
+      dragTop = colorPickerBottom;
+    };
+
+    if (dragLeft - 10 < colorPickerLeft) {
+      dragLeft = colorPickerLeft;
+    };
+
+    if (dragLeft - 10 > colorPickerRight) {
+      dragLeft = colorPickerRight;
+    };
+
+    if (dragHandlePosition.y !== dragTop || dragHandlePosition.x !== dragLeft) {
+      setDragHandlePosition({
+        x: dragLeft,
+        y: dragTop
+      });
+    };
+
+  }, [dragHandlePosition, colorPickerOffset, colorPickerClientRect]);
+
+
+  const handleDragStart = (event) => {
 
     event.dataTransfer.setDragImage(dragItemRef.current, event.target.getBoundingClientRect().width / 2, event.target.getBoundingClientRect().height / 2);
 
@@ -79,10 +124,7 @@ const ColorPicker = (props) => {
 
   const handleDrop = (event) => {
 
-    console.log("event.type", event.type);
-
-    console.log("eventX", event.pageX);
-    console.log("eventY", event.pageY);
+    event.dataTransfer.setDragImage(dragItemRef.current, dragItemRef.current.getBoundingClientRect().width / 2, dragItemRef.current.getBoundingClientRect().height / 2);
 
     // pageX = saturation 0 - 100
     // pageY = brightness (not lightness) 0 - 100
@@ -110,7 +152,9 @@ const ColorPicker = (props) => {
       y: event.pageY - colorPickerOffset.y
     };
 
-    setHandlePosition(newPosition);
+    console.log("newPosition", newPosition);
+
+    setDragHandlePosition(newPosition);
 
     setIsDragging(false);
 
@@ -119,14 +163,38 @@ const ColorPicker = (props) => {
 
   };
 
+
+  const handleClick = (event) => {
+
+    if (isDragging === false) {
+
+      // setIsDragging(true);
+
+      let newPosition = {
+        x: event.pageX - colorPickerOffset.x,
+        y: event.pageY - colorPickerOffset.y
+      };
+
+      console.log("newPosition", newPosition);
+
+      setDragHandlePosition(newPosition);
+
+      // setIsDragging(true);
+
+    };
+
+  };
+
+
   return (
-    <StyledColorPicker $hue={hue} $handlePosition={handlePosition} $isDragging={isDragging} ref={colorPickerRef} onDragOver={(event) => { event.preventDefault(); }} onDrop={(event) => { handleDrop(event); }}>
+    <StyledColorPicker $hue={hue} $dragHandlePosition={dragHandlePosition} $isDragging={isDragging} ref={colorPickerRef} onDragOver={(event) => { event.preventDefault(); }} onDrop={(event) => { handleDrop(event); }} onDragLeave={(event) => { handleDrop(event); }} onClick={(event) => { handleClick(event); }}>
       <div
         className="color-picker-cursor"
         draggable="true"
         style={{
-          top: `calc(${handlePosition.y} - 10px)`,
-          left: `calc(${handlePosition.x} - 10px)`
+          // ? use dragItemRef so that 10px isn't hard coded? -- 12/30/2023 JH
+          top: `calc(${dragHandlePosition.y}px - 10px)`,
+          left: `calc(${dragHandlePosition.x}px - 10px)`
         }}
         onDragStart={(event) => { handleDragStart(event); }}
       // onDragEnd={(event) => { handleDragEnd(event); }}
