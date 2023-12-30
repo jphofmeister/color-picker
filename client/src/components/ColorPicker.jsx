@@ -35,10 +35,9 @@ const ColorPicker = (props) => {
 
   // let componentName = "ColorPicker";
 
-
   let hue = isEmpty(props) === false && isEmpty(props.hue) === false ? props.hue : "";
 
-  let setSaturation = isEmpty(props.setSaturation) === false ? props.setRsetSaturationgHue : noFunctionAvailable;
+  let setSaturation = isEmpty(props.setSaturation) === false ? props.setSaturation : noFunctionAvailable;
   let setLightness = isEmpty(props.setLightness) === false ? props.setLightness : noFunctionAvailable;
 
   const colorPickerRef = useRef(null);
@@ -94,82 +93,80 @@ const ColorPicker = (props) => {
   }, [colorPickerRef, scrollPosition]);
 
 
-  // * if color picker handle goes outside the color picker box, reset to the edge of the box -- 
-  useEffect(() => {
+  // // * if color picker handle goes outside the color picker box, reset to the edge of the box -- 
+  // useEffect(() => {
 
-    let dragTop = dragHandlePosition.y;
-    let dragLeft = dragHandlePosition.x;
+  //   let dragTop = dragHandlePosition.y;
+  //   let dragLeft = dragHandlePosition.x;
 
-    let colorPickerTop = colorPickerClientRect.top - colorPickerOffset.y;
-    let colorPickerBottom = colorPickerClientRect.bottom - colorPickerOffset.y;
-    let colorPickerLeft = colorPickerClientRect.left - colorPickerOffset.x;
-    let colorPickerRight = colorPickerClientRect.right - colorPickerOffset.x;
+  //   let colorPickerTop = colorPickerClientRect.top - colorPickerOffset.y;
+  //   let colorPickerBottom = colorPickerClientRect.bottom - colorPickerOffset.y;
+  //   let colorPickerLeft = colorPickerClientRect.left - colorPickerOffset.x;
+  //   let colorPickerRight = colorPickerClientRect.right - colorPickerOffset.x;
 
-    if (dragTop - 10 < colorPickerTop) {
-      dragTop = colorPickerTop;
-    };
-
-    if (dragTop - 10 > colorPickerBottom) {
-      dragTop = colorPickerBottom;
-    };
-
-    if (dragLeft - 10 < colorPickerLeft) {
-      dragLeft = colorPickerLeft;
-    };
-
-    if (dragLeft - 10 > colorPickerRight) {
-      dragLeft = colorPickerRight;
-    };
-
-    if (dragHandlePosition.y !== dragTop || dragHandlePosition.x !== dragLeft) {
-      setDragHandlePosition({
-        x: dragLeft,
-        y: dragTop
-      });
-    };
-
-  }, [dragHandlePosition, colorPickerOffset, colorPickerClientRect]);
-
-
-  // pageX = saturation 0 - 100
-  // pageY = brightness (not lightness) 0 - 100
-
-  // https://stackoverflow.com/a/31851617
-  // function hsv_to_hsl(h, s, v) {
-  //   // both hsv and hsl values are in [0, 1]
-  //   var l = (2 - s) * v / 2;
-
-  //   if (l != 0) {
-  //     if (l == 1) {
-  //       s = 0;
-  //     } else if (l < 0.5) {
-  //       s = s * v / (l * 2);
-  //     } else {
-  //       s = s * v / (2 - l * 2);
-  //     }
-  //   }
-
-  //   return [h, s, l];
-  // }
-
-
-  // const handleDrop = (event) => {
-
-  //   // event.dataTransfer.setDragImage(dragItemRef.current, dragItemRef.current.getBoundingClientRect().width / 2, dragItemRef.current.getBoundingClientRect().height / 2);
-
-  //   let newPosition = {
-  //     x: event.pageX - colorPickerOffset.x,
-  //     y: event.pageY - colorPickerOffset.y
+  //   if (dragTop - 10 < colorPickerTop) {
+  //     dragTop = colorPickerTop;
   //   };
 
-  //   console.log("newPosition", newPosition);
+  //   if (dragTop - 10 > colorPickerBottom) {
+  //     dragTop = colorPickerBottom;
+  //   };
 
-  //   setDragHandlePosition(newPosition);
+  //   if (dragLeft - 10 < colorPickerLeft) {
+  //     dragLeft = colorPickerLeft;
+  //   };
 
-  //   setIsDragging(false);
+  //   if (dragLeft - 10 > colorPickerRight) {
+  //     dragLeft = colorPickerRight;
+  //   };
+
+  //   if (dragHandlePosition.y !== dragTop || dragHandlePosition.x !== dragLeft) {
+  //     setDragHandlePosition({
+  //       x: dragLeft,
+  //       y: dragTop
+  //     });
+  //   };
+
+  // }, [dragHandlePosition, colorPickerOffset, colorPickerClientRect]);
 
 
-  // };
+  // * convert hsv to hsl -- 12/30/2023 JH
+  // https://stackoverflow.com/a/31851617
+  useEffect(() => {
+
+    if (isEmpty(colorPickerClientRect.width) === false && isEmpty(colorPickerClientRect.height) === false) {
+
+      let s_saturation = dragHandlePosition.x / colorPickerClientRect.width;
+      let v_brightness = 1 - (dragHandlePosition.y / colorPickerClientRect.height);
+
+      if (v_brightness > 1) {
+        v_brightness = 1;
+      };
+
+      if (v_brightness < 0) {
+        v_brightness = 0;
+      };
+
+      // * both hsv and hsl values are in [0, 1]
+      let l_lightness = (2 - s_saturation) * v_brightness / 2;
+
+      if (l_lightness != 0) {
+        if (l_lightness == 1) {
+          s_saturation = 0;
+        } else if (l_lightness < 0.5) {
+          s_saturation = s_saturation * v_brightness / (l_lightness * 2);
+        } else {
+          s_saturation = s_saturation * v_brightness / (2 - l_lightness * 2);
+        };
+      };
+
+      setSaturation(Math.round(s_saturation * 100));
+      setLightness(Math.round(l_lightness * 100));
+
+    };
+
+
+  }, [dragHandlePosition, colorPickerClientRect]);
 
 
   const handleDragStart = (event) => {

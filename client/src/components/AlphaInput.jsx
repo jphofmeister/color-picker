@@ -7,27 +7,27 @@ const AlphaInputContainer = styled.div`
   width: 360px;
   padding: 0;
   margin-bottom: 1rem;
-  background: #fff;
+  /* background: #fff; */
 
   input {
-    background: #fff !important;
-    background-color: #fff !important;
+    /* background: #fff !important;
+    background-color: #fff !important; */
 
     &::-webkit-slider-thumb {
       background-color: #fff !important;
-      background: hsla(${props => props.hue}, ${props => props.saturation}%, ${props => props.lightness}%, ${props => props.alpha});
+      background: hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, ${props => props.$alpha});
     }
 
     &::-moz-range-thumb {
-      background: hsla(${props => props.hue}, ${props => props.saturation}%, ${props => props.lightness}%, ${props => props.alpha});
+      background: hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, ${props => props.$alpha});
     }
 
     &::-webkit-slider-runnable-track {
-      background: linear-gradient(to right, hsla(${props => props.hue}, ${props => props.saturation}%, ${props => props.lightness}%, 0), hsla(${props => props.hue}, ${props => props.saturation}%, ${props => props.lightness}%, 1));
+      background: linear-gradient(to right, hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, 0), hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, 1));
     }
 
     &::-moz-range-track {
-      background: linear-gradient(to right, hsla(${props => props.hue}, ${props => props.saturation}%, ${props => props.lightness}%, 0), hsla(${props => props.hue}, ${props => props.saturation}%, ${props => props.lightness}%, 1));
+      background: linear-gradient(to right, hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, 0), hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, 1));
     }
   }
 `;

@@ -5,6 +5,14 @@ import HueInput from "./components/HueInput";
 import AlphaInput from "./components/AlphaInput";
 import FormInput from "./components/common/FormInput";
 
+const StyledSelectColor = styled.div`
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  border: 2px solid rgba(15, 15, 15, 0.2);
+  background-color: hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, ${props => props.$alpha});
+`;
+
 const App = () => {
 
   const [rngHue, setRngHue] = useState(0);
@@ -22,13 +30,11 @@ const App = () => {
       <AlphaInput rngAlpha={rngAlpha} setRngAlpha={setRngAlpha} rngHue={rngHue} saturation={saturation} lightness={lightness} />
 
       <div className="info">
-        <p>
-          <strong>Selected Color:</strong> hsla({rngHue}, {saturation}%, {lightness}%, {rngAlpha})
-        </p>
 
-        <div className="selected-color" style={{
-          background: `hsla(${rngHue}, ${saturation}%, ${lightness}%, ${rngAlpha})`
-        }}></div>
+        <p><strong>Selected Color:</strong> hsla({rngHue}, {saturation}%, {lightness}%, {rngAlpha})</p>
+
+        <StyledSelectColor $hue={rngHue} $saturation={saturation} $lightness={lightness} $alpha={rngAlpha} />
+
       </div>
 
       <ColorPicker hue={rngHue} setSaturation={setSaturation} setLightness={setLightness} />
