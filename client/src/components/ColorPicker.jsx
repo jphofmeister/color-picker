@@ -43,8 +43,8 @@ const ColorPicker = (props) => {
   const colorPickerRef = useRef(null);
 
   const [colorPickerClientRect, setColorPickerClientRect] = useState({});
-  const [colorPickerOffset, setColorPickerOffset] = useState({ x: 0, y: 0 });
-  const [dragHandlePosition, setDragHandlePosition] = useState({ x: 0, y: 0 });
+  const [colorPickerOffset, setColorPickerOffset] = useState({ x: 500, y: 0 });
+  const [dragHandlePosition, setDragHandlePosition] = useState({ x: 500, y: 0 });
 
   const [isDragging, setIsDragging] = useState(false);
 
@@ -79,7 +79,15 @@ const ColorPicker = (props) => {
 
       let boundingClientRect = colorPickerRef.current.getBoundingClientRect();
 
-      setColorPickerClientRect(boundingClientRect);
+      // * save boundingClientRect as an object so isEmpty check works -- 01/02/2024 JH
+      setColorPickerClientRect({
+        width: boundingClientRect.width,
+        height: boundingClientRect.height,
+        top: boundingClientRect.top,
+        right: boundingClientRect.right,
+        bottom: boundingClientRect.bottom,
+        left: boundingClientRect.left,
+      });
 
       let newOffset = {
         x: boundingClientRect.x + scrollPosition.x,
@@ -93,41 +101,48 @@ const ColorPicker = (props) => {
   }, [colorPickerRef, scrollPosition]);
 
 
-  // // * if color picker handle goes outside the color picker box, reset to the edge of the box -- 
-  // useEffect(() => {
+  // * if color picker handle goes outside the color picker box, reset to the edge of the box -- 
+  useEffect(() => {
 
-  //   let dragTop = dragHandlePosition.y;
-  //   let dragLeft = dragHandlePosition.x;
 
-  //   let colorPickerTop = colorPickerClientRect.top - colorPickerOffset.y;
-  //   let colorPickerBottom = colorPickerClientRect.bottom - colorPickerOffset.y;
-  //   let colorPickerLeft = colorPickerClientRect.left - colorPickerOffset.x;
-  //   let colorPickerRight = colorPickerClientRect.right - colorPickerOffset.x;
+    if (isEmpty(colorPickerClientRect) === false) {
 
-  //   if (dragTop - 10 < colorPickerTop) {
-  //     dragTop = colorPickerTop;
-  //   };
+      let dragTop = dragHandlePosition.y;
+      let dragLeft = dragHandlePosition.x;
 
-  //   if (dragTop - 10 > colorPickerBottom) {
-  //     dragTop = colorPickerBottom;
-  //   };
+      let colorPickerTop = colorPickerClientRect.top - colorPickerOffset.y;
+      let colorPickerBottom = colorPickerClientRect.bottom - colorPickerOffset.y;
+      let colorPickerLeft = colorPickerClientRect.left - colorPickerOffset.x;
+      let colorPickerRight = colorPickerClientRect.right - colorPickerOffset.x;
 
-  //   if (dragLeft - 10 < colorPickerLeft) {
-  //     dragLeft = colorPickerLeft;
-  //   };
+      if (dragTop < colorPickerTop) {
+        dragTop = colorPickerTop;
+      };
 
-  //   if (dragLeft - 10 > colorPickerRight) {
-  //     dragLeft = colorPickerRight;
-  //   };
+      if (dragTop > colorPickerBottom) {
+        dragTop = colorPickerBottom;
+      };
 
-  //   if (dragHandlePosition.y !== dragTop || dragHandlePosition.x !== dragLeft) {
-  //     setDragHandlePosition({
-  //       x: dragLeft,
-  //       y: dragTop
-  //     });
-  //   };
+      if (dragLeft < colorPickerLeft) {
+        dragLeft = colorPickerLeft;
+      };
 
-  // }, [dragHandlePosition, colorPickerOffset, colorPickerClientRect]);
+      if (dragLeft > colorPickerRight) {
+        dragLeft = colorPickerRight;
+      };
+
+      if (dragHandlePosition.y !== dragTop || dragHandlePosition.x !== dragLeft) {
+
+        setDragHandlePosition({
+          x: dragLeft,
+          y: dragTop
+        });
+
+      };
+
+    };
+
+  }, [dragHandlePosition, colorPickerOffset, colorPickerClientRect]);
 
 
   // * convert hsv to hsl -- 12/30/2023 JH

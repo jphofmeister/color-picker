@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { noFunctionAvailable, isEmpty, getDateTime } from "../utilities/sharedFunctions";
 import FormInput from "./common/FormInput";
 
-const AlphaInputContainer = styled.div`
+const AlphaSliderContainer = styled.div`
   width: 360px;
   padding: 0;
   margin-bottom: 1rem;
@@ -32,13 +32,13 @@ const AlphaInputContainer = styled.div`
   }
 `;
 
-const AlphaInput = (props) => {
+const AlphaSlider = (props) => {
 
   // * Available props:
   // * Properties: rngAlpha, rngHue, saturation, lightness
   // * Functions: setRngAlpha
 
-  // let componentName = "AlphaInput";
+  // let componentName = "AlphaSlider";
 
   let rngAlpha = isEmpty(props) === false && isEmpty(props.rngAlpha) === false ? props.rngAlpha : 1;
   let rngHue = isEmpty(props) === false && isEmpty(props.rngHue) === false ? props.rngHue : 0;
@@ -48,7 +48,7 @@ const AlphaInput = (props) => {
   let setRngAlpha = isEmpty(props.setRngAlpha) === false ? props.setRngAlpha : noFunctionAvailable;
 
   return (
-    <AlphaInputContainer className="slider-input-container" $hue={rngHue} $saturation={saturation} $lightness={lightness} $alpha={rngAlpha}>
+    <AlphaSliderContainer className="slider-input-container" $hue={rngHue} $saturation={saturation} $lightness={lightness} $alpha={rngAlpha}>
       <FormInput
         formInputID="rngAlpha"
         labelText="Alpha"
@@ -60,8 +60,8 @@ const AlphaInput = (props) => {
         inputMax={1}
         inputStep={0.01}
       />
-    </AlphaInputContainer>
+    </AlphaSliderContainer>
   );
 };
 
-export default AlphaInput;
+export default AlphaSlider;
