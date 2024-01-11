@@ -7,12 +7,9 @@ const AlphaSliderContainer = styled.div`
   width: 360px;
   padding: 0;
   margin-bottom: 1rem;
-  /* background: #fff; */
+  border: none;
 
   input {
-    /* background: #fff !important;
-    background-color: #fff !important; */
-
     &::-webkit-slider-thumb {
       background-color: #fff !important;
       background: hsla(${props => props.$hue}, ${props => props.$saturation}%, ${props => props.$lightness}%, ${props => props.$alpha});

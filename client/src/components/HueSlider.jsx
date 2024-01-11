@@ -7,6 +7,7 @@ const HueSliderContainer = styled.div`
   width: 360px;
   padding: 0;
   margin-bottom: 1rem;
+  border: none;
   
   input {
     background: hsla(${props => props.hue}, 100%, 50%, 1);

@@ -19,15 +19,25 @@ const HslaInput = (props) => {
 
   let setTxtHsla = isEmpty(props.setTxtHsla) === false ? props.setTxtHsla : noFunctionAvailable;
 
+  useEffect(() => {
+
+    let hslaString = `${rngHue}, ${saturation}%, ${lightness}%, ${rngAlpha}`;
+
+    if (hslaString !== txtHsla) {
+      setTxtHsla(hslaString);
+    }
+
+  }, [rngAlpha, rngHue, saturation, lightness, txtHsla]);
+
   return (
-    <div>
+    <>
       <FormInput
         formInputID="txtHsla"
         labelText="HSLA"
         inputValue={txtHsla}
         updateValue={setTxtHsla}
       />
-    </div>
+    </>
   );
 };
 

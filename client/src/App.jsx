@@ -3,8 +3,9 @@ import styled from "styled-components";
 import ColorPicker from "./components/ColorPicker";
 import HueSlider from "./components/HueSlider";
 import AlphaSlider from "./components/AlphaSlider";
-import HslaInput from "./components/HslaInput";
+// import HslaInput from "./components/HslaInput";
 import { hslToRgb, rgbToHsl } from "./utilities/colorFunctions";
+import { isEmpty } from "./utilities/sharedFunctions";
 
 const StyledSelectColor = styled.div`
   width: 50px;
@@ -27,6 +28,36 @@ const App = () => {
   let hslToRgbConversion = hslToRgb(rngHue, (saturation / 100), (lightness / 100));
   let rgbaString = `${hslToRgbConversion[0]}, ${hslToRgbConversion[1]}, ${hslToRgbConversion[2]}, ${rngAlpha}`;
 
+  // useEffect(() => {
+
+  //   if (isEmpty(txtHsla) === false) {
+
+  //     let hslaValues = txtHsla.split(", ");
+
+  //     let newHue = hslaValues[0];
+  //     let newSaturation = hslaValues[1].replace(/%/g, "");
+  //     let newLightness = hslaValues[2].replace(/%/g, "");
+  //     let newAlpha = hslaValues[3];
+
+  //     if (rngHue !== newHue) {
+  //       setRngHue(newHue);
+  //     };
+
+  //     if (saturation !== newSaturation) {
+  //       setSaturation(newSaturation);
+  //     };
+
+  //     if (lightness !== newLightness) {
+  //       setLightness(newLightness);
+  //     };
+
+  //     if (rngAlpha !== newAlpha) {
+  //       setRngAlpha(newAlpha);
+  //     };
+
+  //   }
+
+  // }, [txtHsla, rngAlpha, rngHue, saturation, lightness]);
 
   return (
     <main>
@@ -45,20 +76,28 @@ const App = () => {
 
       <div className="info">
         <strong>Selected Color</strong>
-        <StyledSelectColor $hue={rngHue} $saturation={saturation} $lightness={lightness} $alpha={rngAlpha} />
+        <StyledSelectColor
+          $hue={rngHue}
+          $saturation={saturation}
+          $lightness={lightness}
+          $alpha={rngAlpha} />
       </div>
 
-      <div>
-        <p>hsla({hslaString})</p>
-
-        <HslaInput
+      {/* <HslaInput
           txtHsla={txtHsla}
           setTxtHsla={setTxtHsla}
           rngAlpha={rngAlpha}
           rngHue={rngHue}
           saturation={saturation}
-          lightness={lightness} />
+          lightness={lightness} /> */}
 
+      <div style={{ marginBottom: "1rem" }}>
+
+        <p>hsla({hslaString})</p>
+
+      </div>
+
+      <div>
         <p>rgba({rgbaString})</p>
       </div>
 
