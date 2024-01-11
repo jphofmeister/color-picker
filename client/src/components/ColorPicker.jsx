@@ -8,7 +8,8 @@ const StyledColorPicker = styled.div`
   position: relative;
   height: calc(100dvw - 4rem);
   width: calc(100dvw - 4rem);
-  max-height: ${props => props.$colorPickerSize}px;
+  /* max-height: ${props => props.$colorPickerSize}px; */
+  max-height: 200px;
   max-width: ${props => props.$colorPickerSize}px;
   background: linear-gradient(to bottom,transparent,black),linear-gradient(to right,white,transparent);
   background-color: hsl(${props => props.$hue}, 100%, 50%);
@@ -31,7 +32,7 @@ const ColorPicker = (props) => {
 
   // * Available props:
   // * Properties: hue
-  // * Functions: setSaturation, setLightness
+  // * Functions: setPickerSaturation, setPickerLightness
 
   // let componentName = "ColorPicker";
 
@@ -39,8 +40,8 @@ const ColorPicker = (props) => {
 
   let hue = isEmpty(props) === false && isEmpty(props.hue) === false ? props.hue : "";
 
-  let setSaturation = isEmpty(props.setSaturation) === false ? props.setSaturation : noFunctionAvailable;
-  let setLightness = isEmpty(props.setLightness) === false ? props.setLightness : noFunctionAvailable;
+  let setPickerSaturation = isEmpty(props.setPickerSaturation) === false ? props.setPickerSaturation : noFunctionAvailable;
+  let setPickerLightness = isEmpty(props.setPickerLightness) === false ? props.setPickerLightness : noFunctionAvailable;
 
   const colorPickerRef = useRef(null);
 
@@ -107,7 +108,6 @@ const ColorPicker = (props) => {
   // * if color picker handle goes outside the color picker box, reset to the edge of the box -- 
   useEffect(() => {
 
-
     if (isEmpty(colorPickerClientRect) === false) {
 
       let dragTop = dragHandlePosition.y;
@@ -154,32 +154,32 @@ const ColorPicker = (props) => {
 
     if (isEmpty(colorPickerClientRect.width) === false && isEmpty(colorPickerClientRect.height) === false) {
 
-      let s_saturation = dragHandlePosition.x / colorPickerClientRect.width;
-      let v_brightness = 1 - (dragHandlePosition.y / colorPickerClientRect.height);
+      let s = dragHandlePosition.x / colorPickerClientRect.width;
+      let v = 1 - (dragHandlePosition.y / colorPickerClientRect.height);
 
-      if (v_brightness > 1) {
-        v_brightness = 1;
+      if (v > 1) {
+        v = 1;
       };
 
-      if (v_brightness < 0) {
-        v_brightness = 0;
+      if (v < 0) {
+        v = 0;
       };
 
       // * both hsv and hsl values are in [0, 1]
-      let l_lightness = (2 - s_saturation) * v_brightness / 2;
+      let l = (2 - s) * v / 2;
 
-      if (l_lightness != 0) {
-        if (l_lightness == 1) {
-          s_saturation = 0;
-        } else if (l_lightness < 0.5) {
-          s_saturation = s_saturation * v_brightness / (l_lightness * 2);
+      if (l != 0) {
+        if (l == 1) {
+          s = 0;
+        } else if (l < 0.5) {
+          s = s * v / (l * 2);
         } else {
-          s_saturation = s_saturation * v_brightness / (2 - l_lightness * 2);
+          s = s * v / (2 - l * 2);
         };
       };
 
-      setSaturation(Math.round(s_saturation * 100));
-      setLightness(Math.round(l_lightness * 100));
+      setPickerSaturation(Math.round(s * 100));
+      setPickerLightness(Math.round(l * 100));
 
     };
 
@@ -199,8 +199,6 @@ const ColorPicker = (props) => {
       };
 
       setDragHandlePosition(newPosition);
-
-      // setIsDragging(true);
 
     };
 
@@ -224,8 +222,6 @@ const ColorPicker = (props) => {
 
 
   const handleDragEnd = (event) => {
-
-    // console.log("event.type", event.type);
 
     if (isDragging === true) {
       setIsDragging(false);

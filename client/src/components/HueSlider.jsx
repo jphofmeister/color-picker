@@ -10,14 +10,14 @@ const HueSliderContainer = styled.div`
   border: none;
   
   input {
-    background: hsla(${props => props.hue}, 100%, 50%, 1);
+    background: hsla(${props => props.$hue}, 100%, 50%, 1);
 
     &::-webkit-slider-thumb {
-      background: hsla(${props => props.hue}, 100%, 50%, 1);
+      background: hsla(${props => props.$hue}, 100%, 50%, 1);
     }
 
     &::-moz-range-thumb {
-      background: hsla(${props => props.hue}, 100%, 50%, 1);
+      background: hsla(${props => props.$hue}, 100%, 50%, 1);
     }
 
     &::-webkit-slider-runnable-track {

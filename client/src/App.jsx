@@ -3,7 +3,7 @@ import styled from "styled-components";
 import ColorPicker from "./components/ColorPicker";
 import HueSlider from "./components/HueSlider";
 import AlphaSlider from "./components/AlphaSlider";
-// import HslaInput from "./components/HslaInput";
+import HslaInput from "./components/HslaInput";
 import { hslToRgb, rgbToHsl } from "./utilities/colorFunctions";
 import { isEmpty } from "./utilities/sharedFunctions";
 
@@ -19,13 +19,13 @@ const App = () => {
 
   const [rngHue, setRngHue] = useState(0);
   const [rngAlpha, setRngAlpha] = useState(1);
-  const [saturation, setSaturation] = useState(100);
-  const [lightness, setLightness] = useState(50);
+  const [pickerSaturation, setPickerSaturation] = useState(100);
+  const [pickerLightness, setPickerLightness] = useState(50);
 
   const [txtHsla, setTxtHsla] = useState("");
 
-  let hslaString = `${rngHue}, ${saturation}%, ${lightness}%, ${rngAlpha}`;
-  let hslToRgbConversion = hslToRgb(rngHue, (saturation / 100), (lightness / 100));
+  let hslaString = `${rngHue}, ${pickerSaturation}%, ${pickerLightness}%, ${rngAlpha}`;
+  let hslToRgbConversion = hslToRgb(rngHue, (pickerSaturation / 100), (pickerLightness / 100));
   let rgbaString = `${hslToRgbConversion[0]}, ${hslToRgbConversion[1]}, ${hslToRgbConversion[2]}, ${rngAlpha}`;
 
   // useEffect(() => {
@@ -44,11 +44,11 @@ const App = () => {
   //     };
 
   //     if (saturation !== newSaturation) {
-  //       setSaturation(newSaturation);
+  //       setPickerSaturation(newSaturation);
   //     };
 
   //     if (lightness !== newLightness) {
-  //       setLightness(newLightness);
+  //       setPickerLightness(newLightness);
   //     };
 
   //     if (rngAlpha !== newAlpha) {
@@ -63,7 +63,7 @@ const App = () => {
     <main>
       <h1 className="sr-only">Color Picker</h1>
 
-      <ColorPicker hue={rngHue} setSaturation={setSaturation} setLightness={setLightness} />
+      <ColorPicker hue={rngHue} setPickerSaturation={setPickerSaturation} setPickerLightness={setPickerLightness} />
 
       <div style={{ marginTop: "1rem" }}>
 
@@ -75,34 +75,32 @@ const App = () => {
           rngAlpha={rngAlpha}
           setRngAlpha={setRngAlpha}
           rngHue={rngHue}
-          saturation={saturation}
-          lightness={lightness} />
+          pickerSaturation={pickerSaturation}
+          pickerLightness={pickerLightness} />
       </div>
 
       <div className="info">
         <strong>Selected Color</strong>
         <StyledSelectColor
           $hue={rngHue}
-          $saturation={saturation}
-          $lightness={lightness}
+          $saturation={pickerSaturation}
+          $lightness={pickerLightness}
           $alpha={rngAlpha} />
       </div>
 
       {/* <HslaInput
-          txtHsla={txtHsla}
-          setTxtHsla={setTxtHsla}
-          rngAlpha={rngAlpha}
-          rngHue={rngHue}
-          saturation={saturation}
-          lightness={lightness} /> */}
-
-      <div style={{ marginBottom: "1rem" }}>
-
-        <p>hsla({hslaString})</p>
-
-      </div>
+        txtHsla={txtHsla}
+        setTxtHsla={setTxtHsla}
+        rngAlpha={rngAlpha}
+        rngHue={rngHue}
+        pickerSaturation={pickerSaturation}
+        pickerLightness={pickerLightness} /> */}
 
       <div>
+        <p>hsla({hslaString})</p>
+      </div>
+
+      <div style={{ marginTop: "1rem" }}>
         <p>rgba({rgbaString})</p>
       </div>
 

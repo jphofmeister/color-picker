@@ -39,13 +39,13 @@ const AlphaSlider = (props) => {
 
   let rngAlpha = isEmpty(props) === false && isEmpty(props.rngAlpha) === false ? props.rngAlpha : 1;
   let rngHue = isEmpty(props) === false && isEmpty(props.rngHue) === false ? props.rngHue : 0;
-  let saturation = isEmpty(props) === false && isEmpty(props.saturation) === false ? props.saturation : 100;
-  let lightness = isEmpty(props) === false && isEmpty(props.lightness) === false ? props.lightness : 50;
+  let pickerSaturation = isEmpty(props) === false && isEmpty(props.pickerSaturation) === false ? props.pickerSaturation : 100;
+  let pickerLightness = isEmpty(props) === false && isEmpty(props.pickerLightness) === false ? props.pickerLightness : 50;
 
   let setRngAlpha = isEmpty(props.setRngAlpha) === false ? props.setRngAlpha : noFunctionAvailable;
 
   return (
-    <AlphaSliderContainer className="slider-input-container" $hue={rngHue} $saturation={saturation} $lightness={lightness} $alpha={rngAlpha}>
+    <AlphaSliderContainer className="slider-input-container" $hue={rngHue} $saturation={pickerSaturation} $lightness={pickerLightness} $alpha={rngAlpha}>
       <FormInput
         formInputID="rngAlpha"
         labelText="Alpha"
