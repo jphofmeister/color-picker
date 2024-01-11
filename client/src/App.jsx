@@ -61,18 +61,23 @@ const App = () => {
 
   return (
     <main>
-      <h1>Color Picker</h1>
+      <h1 className="sr-only">Color Picker</h1>
 
-      <HueSlider
-        rngHue={rngHue}
-        setRngHue={setRngHue} />
+      <ColorPicker hue={rngHue} setSaturation={setSaturation} setLightness={setLightness} />
 
-      <AlphaSlider
-        rngAlpha={rngAlpha}
-        setRngAlpha={setRngAlpha}
-        rngHue={rngHue}
-        saturation={saturation}
-        lightness={lightness} />
+      <div style={{ marginTop: "1rem" }}>
+
+        <HueSlider
+          rngHue={rngHue}
+          setRngHue={setRngHue} />
+
+        <AlphaSlider
+          rngAlpha={rngAlpha}
+          setRngAlpha={setRngAlpha}
+          rngHue={rngHue}
+          saturation={saturation}
+          lightness={lightness} />
+      </div>
 
       <div className="info">
         <strong>Selected Color</strong>
@@ -101,7 +106,7 @@ const App = () => {
         <p>rgba({rgbaString})</p>
       </div>
 
-      <ColorPicker hue={rngHue} setSaturation={setSaturation} setLightness={setLightness} />
+
 
     </main>
   );

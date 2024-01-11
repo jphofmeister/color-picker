@@ -8,8 +8,8 @@ const StyledColorPicker = styled.div`
   position: relative;
   height: calc(100dvw - 4rem);
   width: calc(100dvw - 4rem);
-  max-height: 500px;
-  max-width: 500px;
+  max-height: ${props => props.$colorPickerSize}px;
+  max-width: ${props => props.$colorPickerSize}px;
   background: linear-gradient(to bottom,transparent,black),linear-gradient(to right,white,transparent);
   background-color: hsl(${props => props.$hue}, 100%, 50%);
 
@@ -35,6 +35,8 @@ const ColorPicker = (props) => {
 
   // let componentName = "ColorPicker";
 
+  let colorPickerSize = 360;
+
   let hue = isEmpty(props) === false && isEmpty(props.hue) === false ? props.hue : "";
 
   let setSaturation = isEmpty(props.setSaturation) === false ? props.setSaturation : noFunctionAvailable;
@@ -43,12 +45,13 @@ const ColorPicker = (props) => {
   const colorPickerRef = useRef(null);
 
   const [colorPickerClientRect, setColorPickerClientRect] = useState({});
-  const [colorPickerOffset, setColorPickerOffset] = useState({ x: 500, y: 0 });
-  const [dragHandlePosition, setDragHandlePosition] = useState({ x: 500, y: 0 });
+  const [colorPickerOffset, setColorPickerOffset] = useState({ x: colorPickerSize, y: 0 });
+  const [dragHandlePosition, setDragHandlePosition] = useState({ x: colorPickerSize, y: 0 });
 
   const [isDragging, setIsDragging] = useState(false);
 
   const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
+
 
 
   // * save page scroll position to state to update the color picker offset -- 12/30/2023 JH
@@ -222,7 +225,7 @@ const ColorPicker = (props) => {
 
   const handleDragEnd = (event) => {
 
-    console.log("event.type", event.type);
+    // console.log("event.type", event.type);
 
     if (isDragging === true) {
       setIsDragging(false);
@@ -235,6 +238,7 @@ const ColorPicker = (props) => {
     <StyledColorPicker
       $hue={hue}
       $dragHandlePosition={dragHandlePosition}
+      $colorPickerSize={colorPickerSize}
       ref={colorPickerRef}
       onMouseMove={(event) => { handleDrag(event); }}
       onMouseLeave={(event) => { handleDragEnd(event); }}

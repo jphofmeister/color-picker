@@ -6,10 +6,6 @@
     margin: 0;
     padding: 0;
     height: 10px;
-    /* -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
-    cursor: pointer; */
     border-radius: 10px;
 
     &::-webkit-slider-thumb {
@@ -42,19 +38,4 @@
       border-radius: 10px;
     }
   }
-}
-
-.drag-item-copy {
-  position: absolute;
-  opacity: 1;
-  z-index: 2;
-  cursor: grab;
-  width: 20px;
-  height: 20px;
-  top: -200%;
-  left: -200%;
-  background-color: transparent;
-  border: 3px solid #fff;
-  border-radius: 20px;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
 }
