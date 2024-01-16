@@ -1,3 +1,4 @@
 @import "./layout/_base.css";
+@import "./components/_form.css";
 @import "./components/_alertPopup.css";
-@import "./components/_colorPicker.css";
+@import "./components/_sliderInput.css";
