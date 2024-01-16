@@ -3,53 +3,42 @@ import styled from "styled-components";
 import { noFunctionAvailable, isEmpty, getDateTime } from "../utilities/sharedFunctions";
 import FormInput from "./common/FormInput";
 
-const HslaInput = (props) => {
+const RgbaInput = (props) => {
 
   // * Available props:
   // * Properties: hue
   // * Functions: setPickerSaturation, setPickerLightness
 
-  // let componentName = "HslaInput";
+  // let componentName = "RgbaInput";
 
-  let txtHsla = isEmpty(props) === false && isEmpty(props.txtHsla) === false ? props.txtHsla : "";
+  let txtRgba = isEmpty(props) === false && isEmpty(props.txtRgba) === false ? props.txtRgba : "";
   let rngAlpha = isEmpty(props) === false && isEmpty(props.rngAlpha) === false ? props.rngAlpha : 1;
   let rngHue = isEmpty(props) === false && isEmpty(props.rngHue) === false ? props.rngHue : 0;
   let pickerSaturation = isEmpty(props) === false && isEmpty(props.pickerSaturation) === false ? props.pickerSaturation : 100;
   let pickerLightness = isEmpty(props) === false && isEmpty(props.pickerLightness) === false ? props.pickerLightness : 50;
 
-  let setTxtHsla = isEmpty(props.setTxtHsla) === false ? props.setTxtHsla : noFunctionAvailable;
-  let updateInteractiveFields = isEmpty(props.updateInteractiveFields) === false ? props.updateInteractiveFields : noFunctionAvailable;
-
+  let setTxtRgba = isEmpty(props.setTxtRgba) === false ? props.setTxtRgba : noFunctionAvailable;
 
   // useEffect(() => {
 
   //   let hslaString = `${rngHue}, ${pickerSaturation}%, ${pickerLightness}%, ${rngAlpha}`;
 
-  //   if (hslaString !== txtHsla) {
-  //     setTxtHsla(hslaString);
+  //   if (hslaString !== txtRgba) {
+  //     setTxtRgba(hslaString);
   //   }
 
-  // }, [rngAlpha, rngHue, pickerSaturation, pickerLightness, txtHsla]);
-
-
-  const handleChange = (value) => {
-
-    setTxtHsla(value);
-
-    updateInteractiveFields(value);
-
-  };
+  // }, [rngAlpha, rngHue, pickerSaturation, pickerLightness, txtRgba]);
 
   return (
     <>
       <FormInput
-        formInputID="txtHsla"
-        labelText="HSLA"
-        inputValue={txtHsla}
-        updateValue={handleChange}
+        formInputID="txtRgba"
+        labelText="RGBA"
+        inputValue={txtRgba}
+        updateValue={setTxtRgba}
       />
     </>
   );
 };
 
-export default HslaInput;
+export default RgbaInput;

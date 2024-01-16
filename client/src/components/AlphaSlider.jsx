@@ -43,6 +43,17 @@ const AlphaSlider = (props) => {
   let pickerLightness = isEmpty(props) === false && isEmpty(props.pickerLightness) === false ? props.pickerLightness : 50;
 
   let setRngAlpha = isEmpty(props.setRngAlpha) === false ? props.setRngAlpha : noFunctionAvailable;
+  let updateTextFields = isEmpty(props.updateTextFields) === false ? props.updateTextFields : noFunctionAvailable;
+
+
+  const handleChange = (value) => {
+
+    setRngAlpha(value);
+
+    updateTextFields(null, null, null, value);
+
+  };
+
 
   return (
     <AlphaSliderContainer className="slider-input-container" $hue={rngHue} $saturation={pickerSaturation} $lightness={pickerLightness} $alpha={rngAlpha}>
@@ -52,7 +63,7 @@ const AlphaSlider = (props) => {
         srOnly={true}
         inputType="range"
         inputValue={rngAlpha}
-        updateValue={setRngAlpha}
+        updateValue={handleChange}
         inputMin={0}
         inputMax={1}
         inputStep={0.01}

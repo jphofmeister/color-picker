@@ -39,9 +39,12 @@ const ColorPicker = (props) => {
   let colorPickerSize = 360;
 
   let hue = isEmpty(props) === false && isEmpty(props.hue) === false ? props.hue : "";
+  let pickerSaturation = isEmpty(props) === false && isEmpty(props.pickerSaturation) === false ? props.pickerSaturation : "";
+  let pickerLightness = isEmpty(props) === false && isEmpty(props.pickerLightness) === false ? props.pickerLightness : "";
 
   let setPickerSaturation = isEmpty(props.setPickerSaturation) === false ? props.setPickerSaturation : noFunctionAvailable;
   let setPickerLightness = isEmpty(props.setPickerLightness) === false ? props.setPickerLightness : noFunctionAvailable;
+  let updateTextFields = isEmpty(props.updateTextFields) === false ? props.updateTextFields : noFunctionAvailable;
 
   const colorPickerRef = useRef(null);
 
@@ -52,7 +55,6 @@ const ColorPicker = (props) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
-
 
 
   // * save page scroll position to state to update the color picker offset -- 12/30/2023 JH
@@ -148,43 +150,90 @@ const ColorPicker = (props) => {
   }, [dragHandlePosition, colorPickerOffset, colorPickerClientRect]);
 
 
-  // * convert hsv to hsl -- 12/30/2023 JH
+  // * get saturation and lightness from drag handle position -- 12/30/2023 JH
   // https://stackoverflow.com/a/31851617
   useEffect(() => {
 
     if (isEmpty(colorPickerClientRect.width) === false && isEmpty(colorPickerClientRect.height) === false) {
+      console.log("dragHandlePosition", dragHandlePosition);
+      let newSLValues = getSLValues(dragHandlePosition, colorPickerClientRect);
 
-      let s = dragHandlePosition.x / colorPickerClientRect.width;
-      let v = 1 - (dragHandlePosition.y / colorPickerClientRect.height);
+      let newSaturation = newSLValues[0];
+      let newLightness = newSLValues[1];
 
-      if (v > 1) {
-        v = 1;
-      };
+      setPickerSaturation(newSaturation);
+      setPickerLightness(newLightness);
 
-      if (v < 0) {
-        v = 0;
-      };
+      console.log("newSaturation", newSaturation);
+      console.log("newLightness", newLightness);
 
-      // * both hsv and hsl values are in [0, 1]
-      let l = (2 - s) * v / 2;
-
-      if (l != 0) {
-        if (l == 1) {
-          s = 0;
-        } else if (l < 0.5) {
-          s = s * v / (l * 2);
-        } else {
-          s = s * v / (2 - l * 2);
-        };
-      };
-
-      setPickerSaturation(Math.round(s * 100));
-      setPickerLightness(Math.round(l * 100));
+      updateTextFields(null, newSaturation, newLightness, null);
 
     };
 
 
   }, [dragHandlePosition, colorPickerClientRect]);
+
+
+  // useEffect(() => {
+
+  //   if (isEmpty(colorPickerClientRect.width) === false && isEmpty(colorPickerClientRect.height) === false) {
+
+  //     let newSLValues = getSLValues(dragHandlePosition, colorPickerClientRect);
+
+  //     let newSaturation = newSLValues[0];
+  //     let newLightness = newSLValues[1];
+
+  //     if (newSaturation !== pickerSaturation || newLightness !== pickerLightness) {
+
+  //       let currentSaturation = pickerSaturation / 100;
+  //       let currentLightness = pickerLightness / 100;
+
+  //       let newV = currentSaturation * Math.min(currentLightness, 1 - currentLightness) + currentLightness;
+
+  //       let newX = currentSaturation * colorPickerClientRect.width;
+  //       let newY = (newV * -1) * colorPickerClientRect.height + colorPickerClientRect.height;
+
+  //       console.log("newX", newX);
+  //       console.log("newY", newY);
+
+  //       setDragHandlePosition({ x: newX, y: newY });
+
+  //     };
+
+  //   };
+
+  // }, [pickerLightness, pickerSaturation]);
+
+
+  const getSLValues = (position, dimensions) => {
+
+    let s = position.x / dimensions.width;
+    let v = 1 - (position.y / dimensions.height);
+
+    if (v > 1) {
+      v = 1;
+    };
+
+    if (v < 0) {
+      v = 0;
+    };
+
+    // * both hsv and hsl values are in [0, 1]
+    let l = (2 - s) * v / 2;
+
+    if (l != 0) {
+      if (l == 1) {
+        s = 0;
+      } else if (l < 0.5) {
+        s = s * v / (l * 2);
+      } else {
+        s = s * v / (2 - l * 2);
+      };
+    };
+
+    return [Math.round(s * 100), Math.round(l * 100)];
+  };
 
 
   const handleDragStart = (event) => {

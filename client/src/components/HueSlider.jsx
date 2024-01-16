@@ -41,6 +41,16 @@ const HueSlider = (props) => {
   let rngHue = isEmpty(props) === false && isEmpty(props.rngHue) === false ? props.rngHue : "";
 
   let setRngHue = isEmpty(props.setRngHue) === false ? props.setRngHue : noFunctionAvailable;
+  let updateTextFields = isEmpty(props.updateTextFields) === false ? props.updateTextFields : noFunctionAvailable;
+
+
+  const handleChange = (value) => {
+
+    setRngHue(value);
+
+    updateTextFields(value, null, null, null);
+
+  };
 
   return (
     <HueSliderContainer className="slider-input-container" $hue={rngHue}>
@@ -50,7 +60,7 @@ const HueSlider = (props) => {
         srOnly={true}
         inputType="range"
         inputValue={rngHue}
-        updateValue={setRngHue}
+        updateValue={handleChange}
         inputMin={0}
         inputMax={359}
         inputStep={1}
