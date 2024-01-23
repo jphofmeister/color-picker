@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/css";
 import { isEmpty } from "./utilities/sharedFunctions";
+import Login from "./components/Login";
 
 const StyledSelectColor = styled.div`
   width: 50px;
@@ -24,6 +25,8 @@ const App = () => {
 
   return (
     <main style={{ maxWidth: "300px" }}>
+
+      <Login />
 
       <ColorPicker color={color} onChange={setColor} />
 

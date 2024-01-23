@@ -1,43 +1,28 @@
 const express = require("express");
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const { jwtTokens } = require('../../utilities/jwtHelpers.js');
+const { authenticateToken } = require('../../middleware/authorization.js');
 
 const dbUsername = require("../../config/keys").dbUsername;
 const dbPassword = require("../../config/keys").dbPassword;
-
 
 const { Pool } = require("pg");
 const pool = new Pool({
   user: dbUsername,
   host: "localhost",
-  database: "color_picker",
+  database: "color-picker",
   password: dbPassword,
   port: 5432
 });
 
 
+// * GET api/users
 // * get all users -- 12/09/2022 JH
-router.get("/", (request, response) => {
+router.get("/", /*authenticateToken,*/(request, response) => {
 
-  pool.query("SELECT * FROM users ORDER BY id ASC")
-    .then((results) => {
-      console.log("results.rows", results.rows);
-      response.json(results.rows);
-    })
-    .catch((error) => {
-      if (error) {
-        console.log("error", error);
-        console.error("Here is an error!", error);
-        response.status(500).send(error);
-      };
-    });
-
-});
-
-
-// * get a user by id -- 12/09/2022 JH
-router.get("/:id", (request, response) => {
-
-  pool.query("SELECT * FROM users WHERE user_id = $1", [request.params.userID])
+  pool.query("SELECT * FROM users ORDER BY user_id ASC")
     .then((results) => {
       console.log("results.rows", results.rows);
       response.json(results.rows);
@@ -52,15 +37,44 @@ router.get("/:id", (request, response) => {
 });
 
 
+// // * GET api/users/:userID
+// // * get a user by id -- 12/09/2022 JH
+// router.get("/:userID", (request, response) => {
+
+//   pool.query("SELECT * FROM users WHERE user_id = $1", [request.params.userID])
+//     .then((results) => {
+//       console.log("results.rows", results.rows);
+//       response.json(results.rows);
+//     })
+//     .catch((error) => {
+//       if (error) {
+//         console.error("Here is an error!", error);
+//         response.status(500).send(error);
+//       };
+//     });
+
+// });
+
+
+// * POST api/users/add
 // * create a user -- 12/09/2022 JH
 router.post("/add", (request, response) => {
 
   let newTimestamp = new Date();
 
-  pool.query("INSERT INTO users (user_name, user_password, created_on, active) VALUES ($1, $2, $3, $4)", [request.body.userName, request.body.userPassword, newTimestamp, true])
-    .then((results) => {
-      console.log("results.rows", results.rows);
-      response.json(results.rows);
+  bcrypt.hash(request.body.userPassword, 10)
+    .then((hashedPassword) => {
+      pool.query("INSERT INTO users (user_name, user_password, created_on, active) VALUES ($1, $2, $3, $4) RETURNING *", [request.body.userName, hashedPassword, newTimestamp, true])
+        .then((results) => {
+          console.log("results.rows", results.rows);
+          response.json(jwtTokens(results.rows[0]));
+        })
+        .catch((error) => {
+          if (error) {
+            console.error("Here is an error!", error);
+            response.status(500).send(error);
+          };
+        });
     })
     .catch((error) => {
       if (error) {
@@ -73,11 +87,11 @@ router.post("/add", (request, response) => {
 
 
 // * update a user by id -- 12/09/2022 JH
-router.put("/update/:id", (request, response) => {
+router.put("/update/:userID", (request, response) => {
 
   let newTimestamp = new Date();
 
-  pool.query("UPDATE users SET user_name = $1, user_password = $2, updated_on = $3 WHERE user_id = $4", [request.body.userName, request.body.userPassword, newTimestamp, request.params.userID])
+  pool.query("UPDATE users SET user_name = $1, user_password = $2, updated_on = $3 WHERE user_id = $4 RETURNING *", [request.body.userName, request.body.userPassword, newTimestamp, request.params.userID])
     .then((results) => {
       console.log("results.rows", results.rows);
       response.json(results.rows);
@@ -93,9 +107,9 @@ router.put("/update/:id", (request, response) => {
 
 
 // * soft delete a user by id
-router.put("/softDelete/:id", (request, response) => {
+router.put("/softDelete/:userID", (request, response) => {
 
-  pool.query("UPDATE users SET active = false WHERE user_id = $1", [request.params.userID])
+  pool.query("UPDATE users SET active = false WHERE user_id = $1 RETURNING *", [request.params.userID])
     .then((results) => {
       console.log("results.rows", results.rows);
       response.json(results.rows);
@@ -111,12 +125,11 @@ router.put("/softDelete/:id", (request, response) => {
 
 
 // * hard delete a user by id -- 12/09/2022 JH
-router.delete("/delete/:id", (request, response) => {
+router.delete("/delete/:userID", (request, response) => {
 
   pool.query('DELETE FROM users WHERE user_id = $1', [request.params.userID])
     .then((results) => {
-      console.log("results.rows", results.rows);
-      response.json(results.rows);
+      response.json({ message: "deleted user successfully" });
     })
     .catch((error) => {
       if (error) {
