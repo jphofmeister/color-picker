@@ -4,24 +4,32 @@ require("dotenv").config();
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const path = require('path');
+const path = require("path");
 const cors = require("cors");
-// const dbo = require("./database/connect");
+const cookieParser = require("cookie-parser");
 
-const users = require('./routes/api/users');
-const colors = require('./routes/api/colors');
-const colorGroups = require('./routes/api/colorGroups');
-const colorInColorGroup = require('./routes/api/colorInColorGroup');
-const userColor = require('./routes/api/userColor');
-const userColorGroup = require('./routes/api/userColorGroup');
+const auth = require("./routes/api/auth");
+const users = require("./routes/api/users");
+const colors = require("./routes/api/colors");
+const colorGroups = require("./routes/api/colorGroups");
+const colorInColorGroup = require("./routes/api/colorInColorGroup");
+const userColor = require("./routes/api/userColor");
+const userColorGroup = require("./routes/api/userColorGroup");
 
 const app = express();
 
-app.use(cors());
+let corsOptions = {
+  credentials: true,
+  optionsSuccessStatus: 200,
+  origin: process.env.URL || '*'
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
 
 app.use(require("./middleware/headers"));
 
@@ -29,6 +37,7 @@ app.use(require("./middleware/headers"));
 // app.use(bodyParser.json());
 
 // * Use Routes -- 09/25/2023 JH
+app.use('/api/auth', auth);
 app.use('/api/users', users);
 app.use('/api/colors', colors);
 app.use('/api/colorGroups', colorGroups);

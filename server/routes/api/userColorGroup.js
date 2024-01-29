@@ -4,12 +4,11 @@ const router = express.Router();
 const dbUsername = require("../../config/keys").dbUsername;
 const dbPassword = require("../../config/keys").dbPassword;
 
-
 const { Pool } = require("pg");
 const pool = new Pool({
   user: dbUsername,
   host: "localhost",
-  database: "color_picker",
+  database: "color-picker",
   password: dbPassword,
   port: 5432
 });

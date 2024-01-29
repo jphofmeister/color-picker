@@ -4,12 +4,11 @@ const router = express.Router();
 const dbUsername = require("../../config/keys").dbUsername;
 const dbPassword = require("../../config/keys").dbPassword;
 
-
 const { Pool } = require("pg");
 const pool = new Pool({
   user: dbUsername,
   host: "localhost",
-  database: "color_picker",
+  database: "color-picker",
   password: dbPassword,
   port: 5432
 });
@@ -35,7 +34,7 @@ router.get("/", (request, response) => {
 
 
 // * get a color by id -- 12/09/2022 JH
-router.get("/:id", (request, response) => {
+router.get("/:colorID", (request, response) => {
 
   pool.query("SELECT * FROM colors WHERE color_id = $1", [request.params.colorID])
     .then((results) => {
@@ -73,7 +72,7 @@ router.post("/add", (request, response) => {
 
 
 // * update a color by id -- 12/09/2022 JH
-router.put("/update/:id", (request, response) => {
+router.put("/update/:colorID", (request, response) => {
 
   let newTimestamp = new Date();
 
@@ -93,7 +92,7 @@ router.put("/update/:id", (request, response) => {
 
 
 // * soft delete a color by id
-router.put("/softDelete/:id", (request, response) => {
+router.put("/softDelete/:colorID", (request, response) => {
 
   pool.query("UPDATE colors SET active = false WHERE color_id = $1", [request.params.colorID])
     .then((results) => {
@@ -111,7 +110,7 @@ router.put("/softDelete/:id", (request, response) => {
 
 
 // * hard delete a color by id -- 12/09/2022 JH
-router.delete("/delete/:id", (request, response) => {
+router.delete("/delete/:colorID", (request, response) => {
 
   pool.query('DELETE FROM colors WHERE color_id = $1', [request.params.colorID])
     .then((results) => {
