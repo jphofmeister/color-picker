@@ -1,18 +1,24 @@
 import React, { useEffect } from 'react';
 import classnames from "classnames";
-import { isEmpty, getDateTime, isNonEmptyArray } from "../../utilities/sharedFunctions";
+import { noFunctionAvailable, isEmpty, isNonEmptyArray, getDateTime } from "../../utilities/sharedFunctions";
+import { parse } from "../../utilities/applicationFunctions";
 
 const AlertPopup = (props) => {
 
+  // * Available props: -- 12/30/2022 MF
+  // * Properties: message, alertType, includeResetButton -- 12/30/2022 MF
+  // * Functions: setMessage -- 12/30/2022 MF
+
   let componentName = "AlertPopup";
 
-  let alertType = isEmpty(props) === false && isEmpty(props.alert) === false && isEmpty(props.alert.alertType) === false ? props.alert.alertType : "";
+  // let operationValue = isEmpty(props) === false && isEmpty(props.operationValue) === false ? props.operationValue : "";
+  let alertType = isEmpty(props) === false && isEmpty(props.alertType) === false ? props.alertType : "";
+  let message = isEmpty(props) === false && isEmpty(props.message) === false ? props.message : "";
+  let includeResetButton = isEmpty(props) === false && isEmpty(props.includeResetButton) === false ? props.includeResetButton : false;
 
-  let operationValue = isEmpty(props) === false && isEmpty(props.alert) === false && isEmpty(props.alert.operationValue) === false ? props.alert.operationValue : "";
+  let setMessage = isEmpty(props) === false && isEmpty(props.setMessage) === false ? props.setMessage : noFunctionAvailable;
 
-  let message = isEmpty(props) === false && isEmpty(props.alert) === false && isEmpty(props.alert.message) === false ? props.alert.message : "";
-
-  const alertClasses = classnames("alert alert-danger", {
+  let alertClasses = classnames("alert", {
     "alert-success": alertType === "success",
     "alert-warning": alertType === "warning",
     "alert-info": alertType === "info",
@@ -20,33 +26,31 @@ const AlertPopup = (props) => {
   });
 
 
-  // * Log the full error, if available -- 08/19/2022 JH
-  useEffect(() => {
-
-    if (isEmpty(props) === false && isEmpty(props.alert) === false && isEmpty(props.alert.error) === false) {
-
-      console.error("props.alert.error", props.alert.error);
-
-    };
-
-  }, [props]);
-
-
   return (
-    <div className="alert-container">
+    <div style={{ position: "absolute", width: "100%" }}>
+      <div className="alert-container">
 
-      <div className={alertClasses}>
-        {operationValue} - {message}
+        <div className={alertClasses}>
 
-        <button type="button" className="refresh" onClick={() => window.location.reload()}>
-          Refresh
-        </button>
+          <div className="alert__message-text">
+            {parse(message)}
+          </div>
 
-        <button type="button" className="close" onClick={() => props.setAlert(null)}>
-          <i className="fa-solid fa-xmark"></i>
-        </button>
+          {includeResetButton === true ?
+
+            <button type="button" className="refresh" onClick={() => window.location.reload()}>
+              Refresh
+            </button>
+
+            : null}
+
+          <button type="button" className="alert__close-button" onClick={() => { setMessage(""); }}>
+            <i className="fas fa-close"></i>
+          </button>
+
+        </div>
+
       </div>
-
     </div>
   );
 };

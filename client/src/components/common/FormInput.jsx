@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import classnames from "classnames";
 import { noFunctionAvailable, isEmpty, getDateTime } from "../../utilities/sharedFunctions";
 import { parse } from "../../utilities/applicationFunctions";
@@ -6,7 +6,7 @@ import { parse } from "../../utilities/applicationFunctions";
 const FormInput = (props) => {
 
   // * Available props: -- 06/21/2023 MF
-  // * Properties: formInputID, labelText, srOnly, isRequired, inputType, placeholderText, inputValue, inputDisabled, inputHint, textareaRows, inputMin, inputMax, inputStep -- 06/21/2023 MF
+  // * Properties: formInputID, labelText, srOnly, isRequired, inputType, placeholderText, inputValue, inputDisabled, inputHint, textareaRows, textareaColumns, inputMin, inputMax, inputStep -- 06/21/2023 MF
   // * Functions: onChange -- 06/21/2023 MF
 
   let componentName = "FormInput";
@@ -21,8 +21,9 @@ const FormInput = (props) => {
   let inputDisabled = isEmpty(props) === false && isEmpty(props.inputDisabled) === false ? props.inputDisabled : false;
   let inputHint = isEmpty(props) === false && isEmpty(props.inputHint) === false ? props.inputHint : "";
   let textareaRows = isEmpty(props) === false && isEmpty(props.textareaRows) === false ? props.textareaRows : 10;
-  // let textareaCols = isEmpty(props) === false && isEmpty(props.textareaCols) === false ? props.textareaCols : "";
+  // let textareaColumns = isEmpty(props) === false && isEmpty(props.textareaColumns) === false ? props.textareaColumns : "";
   let useInputAddon = isEmpty(props) === false && isEmpty(props.useInputAddon) === false ? props.useInputAddon : false;
+  let datalistName = isEmpty(props) === false && isEmpty(props.datalistName) === false ? props.datalistName : [];
 
   // * For number, range, date, datetime-local, month, time and week -- 07/25/2023 JH
   // * Default value is null to prevent other input types from having the attribute -- 07/25/2023 JH
@@ -30,7 +31,11 @@ const FormInput = (props) => {
   let inputMax = isEmpty(props) === false && isEmpty(props.inputMax) === false ? props.inputMax : null;
   let inputStep = isEmpty(props) === false && isEmpty(props.inputStep) === false ? props.inputStep : null;
 
+  let inlineError = isEmpty(props) === false && isEmpty(props.inlineError) === false ? props.inlineError : "";
+
   let updateValue = isEmpty(props.updateValue) === false ? props.updateValue : noFunctionAvailable;
+
+  const [showPassword, setShowPassword] = useState("password");
 
   // * If srOnly is set to true, then the form item label is only visible to screen readers. -- 06/21/2023 MF
   let labelClasses = classnames("", {
@@ -39,7 +44,8 @@ const FormInput = (props) => {
   });
 
   let formGroupClasses = classnames("form-group", {
-    "with-addon": useInputAddon === true
+    "with-addon": useInputAddon === true,
+    "input-error": isEmpty(inlineError) === false
   });
 
 
@@ -81,14 +87,35 @@ const FormInput = (props) => {
 
       {inputType === "textarea" ?
 
-        <textarea id={formInputID} name={formInputID} placeholder={placeholderText} rows={textareaRows} /* cols={textareaCols} */ value={inputValue} disabled={inputDisabled} onChange={(event) => handleOnChange(event)} />
+        <textarea id={formInputID} name={formInputID} placeholder={placeholderText} rows={textareaRows} /* cols={textareaColumns} */ value={inputValue} disabled={inputDisabled} onChange={(event) => handleOnChange(event)} />
 
         : null}
 
       {/* // TODO add other input types -- 08/07/2023 JH */}
-      {inputType !== "textarea" && inputType !== "toggle" ?
+      {inputType !== "textarea" && inputType !== "toggle" && inputType !== "password" ?
 
-        <input type={inputType} id={formInputID} placeholder={placeholderText} value={inputValue} disabled={inputDisabled} onChange={(event) => handleOnChange(event)} min={inputMin} max={inputMax} step={inputStep} />
+        <input type={inputType} id={formInputID} placeholder={placeholderText} value={inputValue} disabled={inputDisabled} onChange={(event) => handleOnChange(event)} min={inputMin} max={inputMax} step={inputStep} list={datalistName} />
+
+        : null}
+
+      {inputType === "password" ?
+
+        <div className="form-group__password-input-group">
+
+          <input type={showPassword} id={formInputID} placeholder={placeholderText} value={inputValue} disabled={inputDisabled} onChange={(event) => handleOnChange(event)} min={inputMin} max={inputMax} step={inputStep} />
+
+          <div className="form-group__password-input-group__password-addon" onMouseOver={(event) => { setShowPassword("text"); }} onMouseOut={(event) => { setShowPassword("password"); }} title="Hover to show password.">
+            <i className="fas fa-eye"></i>
+            <span className="sr-only">Hover to show password.</span>
+          </div>
+
+        </div>
+
+        : null}
+
+      {isEmpty(inlineError) === false ?
+
+        <div className="inline-alert inline-alert-danger">{parse(inlineError)}</div>
 
         : null}
 
