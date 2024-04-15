@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
-import ColorPicker from "./components/ColorPicker";
-import HueInput from "./components/HueInput";
-import AlphaInput from "./components/AlphaInput";
-import FormInput from "./components/common/FormInput";
+import { ColorPicker, useColor } from "react-color-palette";
+import "react-color-palette/css";
+import { isEmpty } from "./utilities/sharedFunctions";
+import { setAccessToken, setCurrentUser, addInformationMessage, addSuccessMessage, addWarningMessage, addErrorMessage, clearMessages } from "./app/applicationSlice";
+import Login from "./components/Login";
+import Messages from "./components/Messages";
 
 const StyledSelectColor = styled.div`
   width: 50px;
@@ -15,29 +18,126 @@ const StyledSelectColor = styled.div`
 
 const App = () => {
 
-  const [rngHue, setRngHue] = useState(0);
-  const [rngAlpha, setRngAlpha] = useState(1);
-  const [saturation, setSaturation] = useState(100);
-  const [lightness, setLightness] = useState(50);
+  const dispatch = useDispatch();
+
+  const accessToken = useSelector(state => state.application.accessToken);
+  const currentUser = useSelector(state => state.application.currentUser);
+
+  const [color, setColor] = useColor("#561ecb");
+
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formType, setFormType] = useState("");
+
+  // let baseUrl = "http://localhost:3001/api";
+  let baseUrl = "/api";
+
+
+  const getRefreshToken = (event) => {
+
+    event.preventDefault();
+
+    let url = `${baseUrl}/auth/refresh_token`;
+
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      mode: "cors",
+      credentials: "include"
+    })
+      .then(results => {
+        if (typeof results === "object") {
+          return results.json();
+        } else {
+
+        };
+      })
+      .then(results => {
+        if (isEmpty(results) === false && isEmpty(results.accessToken) === false) {
+
+          let newAccessToken = results.accessToken;
+          dispatch(setAccessToken(newAccessToken));
+
+          let jwtDecoded = jwtDecode(newAccessToken);
+
+          if (isEmpty(jwtDecoded.user_id) === false && isEmpty(jwtDecoded.user_name) === false) {
+
+            let newCurrentUser = {
+              userID: jwtDecoded.user_id,
+              userName: jwtDecoded.user_name
+            };
+
+            dispatch(setCurrentUser(newCurrentUser));
+
+          };
+
+        };
+      });
+
+  };
+
+
+  const deleteRefreshToken = (event) => {
+
+    event.preventDefault();
+
+    let url = `${baseUrl}/auth/refresh_token`;
+
+    fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      mode: "cors",
+      credentials: "include"
+    })
+      .then(results => {
+        if (typeof results === "object") {
+          return results.json();
+        } else {
+
+        };
+      })
+      .then(results => {
+        if (isEmpty(results) === false) {
+
+          console.log("results", results);
+
+          dispatch(setAccessToken(null));
+          dispatch(setCurrentUser({}));
+
+          dispatch(addSuccessMessage("Logged Out"));
+
+        };
+      });
+
+  };
+
 
 
   return (
-    <main>
-      <h1>Color Picker</h1>
+    <main style={{ maxWidth: "500px", margin: "0 auto" }}>
 
-      <HueInput rngHue={rngHue} setRngHue={setRngHue} />
+      <Messages />
 
-      <AlphaInput rngAlpha={rngAlpha} setRngAlpha={setRngAlpha} rngHue={rngHue} saturation={saturation} lightness={lightness} />
+      {isFormOpen !== true && isEmpty(currentUser) === true ?
+        <div className="flex-row justify-end mb-3">
+          <button type="button" className="btn btn-transparent" onClick={() => { setIsFormOpen(true); setFormType("Login"); }}>Login</button>
+          <button type="button" className="btn btn-transparent" onClick={() => { setIsFormOpen(true); setFormType("Sign Up"); }}>Sign Up</button>
+        </div>
+        : null}
 
-      <div className="info">
+      {isEmpty(accessToken) === false && isEmpty(currentUser) === false ?
+        <div className="flex-row justify-end mb-3">
+          <button type="button" className="btn btn-transparent" onClick={(event) => { deleteRefreshToken(event); }}>Log Out</button>
+        </div>
+        : null}
 
-        <p><strong>Selected Color:</strong> hsla({rngHue}, {saturation}%, {lightness}%, {rngAlpha})</p>
+      {isFormOpen === true ?
+        <Login isFormOpen={isFormOpen} setIsFormOpen={setIsFormOpen} formType={formType} setFormType={setFormType} />
+        : null}
 
-        <StyledSelectColor $hue={rngHue} $saturation={saturation} $lightness={lightness} $alpha={rngAlpha} />
-
-      </div>
-
-      <ColorPicker hue={rngHue} setSaturation={setSaturation} setLightness={setLightness} />
+      <ColorPicker color={color} onChange={setColor} />
 
     </main>
   );
