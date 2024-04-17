@@ -81,7 +81,7 @@ const Login = (props) => {
         if (typeof results === "object") {
           return results.json();
         } else {
-
+          console.error("error");
         };
       })
       .then(results => {

@@ -66,19 +66,19 @@ router.post("/add", (request, response) => {
     .then((hashedPassword) => {
       pool.query("INSERT INTO users (user_name, user_password, created_on, active) VALUES ($1, $2, $3, $4) RETURNING *", [request.body.userName, hashedPassword, newTimestamp, true])
         .then((results) => {
-          console.log("results.rows", results.rows);
+          console.log("results", results);
           response.json(jwtTokens(results.rows[0]));
         })
         .catch((error) => {
           if (error) {
-            console.error("Here is an error!", error);
+            console.error("Here is an error on pool.query catch:", error);
             response.status(500).send(error);
           };
         });
     })
     .catch((error) => {
       if (error) {
-        console.error("Here is an error!", error);
+        console.error("Here is an error on bcrypt.hash catch:", error);
         response.status(500).send(error);
       };
     });
