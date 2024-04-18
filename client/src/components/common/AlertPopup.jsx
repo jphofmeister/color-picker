@@ -5,9 +5,9 @@ import { parse } from "../../utilities/applicationFunctions";
 
 const AlertPopup = (props) => {
 
-  // * Available props: -- 12/30/2022 MF
-  // * Properties: message, alertType, includeResetButton -- 12/30/2022 MF
-  // * Functions: setMessage -- 12/30/2022 MF
+  // * Available props:
+  // * Properties: message, alertType, includeResetButton
+  // * Functions: setMessage
 
   let componentName = "AlertPopup";
 
