@@ -5,4 +5,4 @@ Made with React, Node/Express, and PostgreSQL.
 
 Start app with `npm run dev`.
 
-[react-color-palette](https://github.com/Wondermarin/react-color-palette) used as a reference.
+[react-color-palette](https://github.com/Wondermarin/react-color-palette) used as the color picker.

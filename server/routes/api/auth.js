@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { jwtTokens } = require('../../utilities/jwtHelpers.js');
+const { isEmpty, isNonEmptyArray } = require("../../utilities/sharedFunctions");
 
 const dbUsername = require("../../config/keys").dbUsername;
 const dbPassword = require("../../config/keys").dbPassword;
@@ -17,24 +18,50 @@ const pool = new Pool({
 });
 
 
-router.post('/login', async (req, res) => {
-  try {
-    const { userName, userPassword } = req.body;
-    const users = await pool.query('SELECT * FROM users WHERE user_name = $1', [userName]);
-    if (users.rows.length === 0) return res.status(401).json({ error: "username is incorrect" });
-    //PASSWORD CHECK
-    const validPassword = await bcrypt.compare(userPassword, users.rows[0].user_password);
-    if (!validPassword) return res.status(401).json({ error: "Incorrect password" });
-    //JWT
-    let tokens = jwtTokens(users.rows[0]);//Gets access and refresh tokens
-    res.cookie('refresh_token', tokens.refreshToken, { ...(process.env.COOKIE_DOMAIN && { domain: process.env.COOKIE_DOMAIN }), httpOnly: true, sameSite: 'none', secure: true });
-    res.json({
-      // user: users.rows[0],
-      ...tokens
+router.post('/login', (request, response) => {
+
+  let userName = isEmpty(request.body.userName) === false ? request.body.userName : "";
+  let userPassword = isEmpty(request.body.userPassword) === false ? request.body.userPassword : "";
+
+  pool.query('SELECT * FROM users WHERE user_name = $1', [userName])
+    .then((results) => {
+
+      if (isNonEmptyArray(results.rows) === true) {
+
+        bcrypt.compare(userPassword, results.rows[0].user_password)
+          .then(validPassword => {
+
+            if (validPassword === true) {
+
+              // * Create jwt tokens -- 04/18/2024 JH
+              let tokens = jwtTokens(results.rows[0]);
+
+              let cookieDomain = isEmpty(process.env.COOKIE_DOMAIN) === false ? process.env.COOKIE_DOMAIN : "";
+
+              response.cookie('refresh_token', tokens.refreshToken, { domain: cookieDomain, httpOnly: true, sameSite: 'none', secure: true });
+
+              return response.json({ transactionSuccess: true, errorOccurred: false, ...tokens });
+
+            } else {
+
+              return response.status(401).json({ transactionSuccess: false, errorOccurred: true, message: "Incorrect password." });
+
+            };
+
+          });
+
+      } else {
+
+        return response.status(401).json({ transactionSuccess: false, errorOccurred: true, message: "Username is incorrect." });
+
+      };
+
+    })
+    .catch(error => {
+
+      response.status(401).json({ transactionSuccess: false, errorOccurred: true, message: error.message });
+
     });
-  } catch (error) {
-    res.status(401).json({ error: error.message });
-  }
 
 });
 

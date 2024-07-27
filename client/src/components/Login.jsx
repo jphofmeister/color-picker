@@ -23,8 +23,8 @@ const StyledLogin = styled.form`
 const Login = (props) => {
 
   // * Available props: -- 01/29/2024 JH
-  // * Properties: accessToken, currentUser, isFormOpen
-  // * Functions: setAccessToken, setCurrentUser, setIsFormOpen
+  // * Properties: currentUser
+  // * Functions: setCurrentUser, setIsFormOpen
 
   let componentName = "Login";
 
@@ -33,13 +33,8 @@ const Login = (props) => {
   const accessToken = useSelector(state => state.application.accessToken);
   const currentUser = useSelector(state => state.application.currentUser);
 
-  // let accessToken = isEmpty(props) === false && isEmpty(props.accessToken) === false ? props.accessToken : null;
-  // let currentUser = isEmpty(props) === false && isEmpty(props.currentUser) === false ? props.currentUser : null;
-  let isFormOpen = isEmpty(props) === false && isEmpty(props.isFormOpen) === false ? props.isFormOpen : null;
   let formType = isEmpty(props) === false && isEmpty(props.formType) === false ? props.formType : null;
 
-  // let setAccessToken = isEmpty(props.setAccessToken) === false ? props.setAccessToken : noFunctionAvailable;
-  // let setCurrentUser = isEmpty(props.setCurrentUser) === false ? props.setCurrentUser : noFunctionAvailable;
   let setIsFormOpen = isEmpty(props.setIsFormOpen) === false ? props.setIsFormOpen : noFunctionAvailable;
   let setFormType = isEmpty(props.setFormType) === false ? props.setFormType : noFunctionAvailable;
 
@@ -54,13 +49,19 @@ const Login = (props) => {
 
     event.preventDefault();
 
+    dispatch(clearMessages());
+
     let url = "";
     let operationValue = formType;
 
     if (formType === "Login") {
+
       url = `${baseUrl}/auth/login`;
+
     } else if (formType === "Sign Up") {
+
       url = `${baseUrl}/users/add`;
+
     };
 
     let recordObject = {
@@ -77,15 +78,23 @@ const Login = (props) => {
       },
       body: JSON.stringify({ ...recordObject })
     })
-      .then(results => {
+      .then((results) => {
+
         if (typeof results === "object") {
+
           return results.json();
+
         } else {
+
           console.error("error");
+          dispatch(addErrorMessage(`${operationValue}: No results.`));
+
         };
+
       })
-      .then(results => {
-        if (isEmpty(results) === false && isEmpty(results.accessToken) === false) {
+      .then((results) => {
+
+        if (isEmpty(results) === false && results.transactionSuccess === true && isEmpty(results.accessToken) === false) {
 
           let newAccessToken = results.accessToken;
           dispatch(setAccessToken(newAccessToken));
@@ -103,11 +112,22 @@ const Login = (props) => {
 
             closeForm();
 
-            dispatch(addSuccessMessage(`${operationValue}: Success! Logged in as ${newCurrentUser.userName}`));
+            dispatch(addSuccessMessage(`${operationValue} Success: Logged in as ${newCurrentUser.userName}`));
 
           };
 
+        } else {
+
+          dispatch(addErrorMessage(`${operationValue}: ${results.message}`));
+
         };
+
+      })
+      .catch((error) => {
+
+        console.error("error", error);
+        dispatch(addErrorMessage(`${operationValue}: No results.`));
+
       });
 
   };
@@ -126,6 +146,7 @@ const Login = (props) => {
 
   return (
     <StyledLogin>
+
       <h2>{formType}</h2>
 
       <FormInput
@@ -147,10 +168,6 @@ const Login = (props) => {
         <button type="submit" className="btn btn-primary" onClick={(event) => { handleSubmit(event); }}>Submit</button>
         <button type="button" className="btn btn-light-gray" onClick={() => { closeForm(); }}>Cancel</button>
       </div>
-
-      {/* <div>
-        <button type="button" onClick={(event) => { getRefreshToken(event); }}>Refresh Token</button>
-      </div> */}
 
     </StyledLogin>
   );

@@ -5,9 +5,9 @@ import { parse } from "../../utilities/applicationFunctions";
 
 const FormInput = (props) => {
 
-  // * Available props: -- 06/21/2023 MF
-  // * Properties: formInputID, labelText, srOnly, isRequired, inputType, placeholderText, inputValue, inputDisabled, inputHint, textareaRows, textareaColumns, inputMin, inputMax, inputStep -- 06/21/2023 MF
-  // * Functions: onChange -- 06/21/2023 MF
+  // * Available props:
+  // * Properties: formInputID, labelText, srOnly, isRequired, inputType, placeholderText, inputValue, inputDisabled, inputHint, textareaRows, textareaColumns, inputMin, inputMax, inputStep
+  // * Functions: onChange
 
   let componentName = "FormInput";
 
@@ -37,7 +37,7 @@ const FormInput = (props) => {
 
   const [showPassword, setShowPassword] = useState("password");
 
-  // * If srOnly is set to true, then the form item label is only visible to screen readers. -- 06/21/2023 MF
+  // * If srOnly is set to true, then the form item label is only visible to screen readers. -- 06/21/2023 JH
   let labelClasses = classnames("", {
     "sr-only": srOnly === true,
     "input-addon": useInputAddon === true
